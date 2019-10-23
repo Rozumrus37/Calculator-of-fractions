@@ -1,0 +1,96 @@
+using System;
+using System.Reflection;
+using System.Runtime;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+
+namespace FRACTIONS
+{
+    internal class Program
+    {
+        public static string PrintFraction(int up, int down)
+        {
+            return up + "/" + down;
+        }
+        public static int gcd(int a, int b)
+        {
+            while (b != 0)
+            {
+                a %= b;
+                int t = a;    
+                a = b;
+                b = t;
+            }
+
+            return a;
+        }
+
+        public static int lcm(int a, int b)
+        {
+            return a * b / gcd(a, b);
+        }
+
+        public static int SumUpOfFraction(int a1, int a2, int b1, int b2, int l)
+        {
+            return l / a2 * a1 + l / b2 * b1;
+        }
+        
+        public static int SubUpOfFraction(int a1, int a2, int b1, int b2, int l)
+        {
+          return l / a2 * a1 - l / b2 * b1;
+        }
+        public struct Fraction
+        {
+            public int up;
+            public int down;
+            public Fraction(int up, int down)
+            {
+                this.up = up;
+                this.down = down;
+            }
+
+            public static Fraction operator + (Fraction a, Fraction b)
+            {
+                return new Fraction(SumUpOfFraction(a.up, a.down, b.up, b.down, lcm(a.down,b.down)), lcm(a.down, b.down));
+            }
+
+            public static Fraction operator *(Fraction a, Fraction b)
+            {
+                return new Fraction(a.up * b.up, a.down * b.down);
+            } 
+            
+            public static Fraction operator / (Fraction a, Fraction b)
+            {
+                return new Fraction(a.up * b.down, a.down * b.up);
+            } 
+            
+            public static Fraction operator - (Fraction a, Fraction b)
+            {
+                return new Fraction(SubUpOfFraction(a.up, a.down, b.up, b.down, lcm(a.down,b.down)), lcm(a.down, b.down));
+            }
+            
+        }
+        
+        
+        
+        public static void Main(string[] args)
+        {
+            Fraction a = new Fraction(2, 5);
+            Fraction b = new Fraction(3, 6);
+            Console.WriteLine("The fractions are: " + a.up + "/" + a.down + " and " +  b.up + "/" + b.down);
+            Fraction sum = a + b;
+            Console.WriteLine("Sum is: " + PrintFraction(sum.up, sum.down));
+
+            Fraction mul = a * b;
+            Console.WriteLine("Multiply is: " + PrintFraction(mul.up, mul.down));
+            
+            Fraction div = a / b;
+            Console.WriteLine("Division is: " + PrintFraction(div.up, div.down));
+
+            Fraction sub = a - b;
+            Console.WriteLine("Substracting is: " + PrintFraction(sub.up, sub.down));
+            
+            
+        }
+    }
+}
