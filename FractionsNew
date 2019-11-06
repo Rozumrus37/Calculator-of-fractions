@@ -1,0 +1,217 @@
+using System;
+using System.Reflection;
+using System.Runtime;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+
+namespace FRACTIONS
+{
+    internal class Program
+    {
+        public static string PrintFraction(int up, int down)
+        {
+            return up + "/" + down;
+        }
+
+        public static int gcd(int a, int b)
+        {
+            while (b != 0)
+            {
+                a %= b;
+                int t = a;
+                a = b;
+                b = t;
+            }
+
+            return a;
+        }
+
+        public static long GcdLong(long a, long b)
+        {
+            while (b != 0)
+            {
+                a %= b;
+                long t = a;
+                a = b;
+                b = t;
+            }
+
+            return a;
+        }
+
+        public static int SumUp(int a1, int a2, int b1, int b2)
+        {
+            if (a2 == b2) return a1 + b1;
+            return a1 * b2 + b1 * a2;
+        }
+
+        public static void ToFraction(string s)
+        {
+            int cnt = s.Length - 2;
+            int[] a = new int[s.Length];
+            long  c = 0;
+            for (int i = 0; i < s.Length; i++)
+            {
+                a[i] = -1;
+                if(s[i] != '.') 
+                     a[i] = s[i] - '0';
+
+                
+            }
+
+            long num=0;
+            for (int i = s.Length - 1; i >= 0; i--)
+            {
+                
+                if (a[i] != -1)
+                {
+
+                    num += Convert.ToInt64(a[i] * Math.Pow(10, c));
+                    c++;
+                }
+            }
+
+            long res = GcdLong(num, Convert.ToInt64(Math.Pow(10, cnt)));
+            Console.WriteLine("Fraction is: " + num/res + "/" + Convert.ToInt64(Math.Pow(10, cnt))/res);
+            
+        }
+        
+       
+        public static int SumandSubDown(int a1, int a2, int b1, int b2)
+        {
+            if (a2 == b2) return a2;
+            return a2 * b2;
+        }
+        
+        public static int SubUp(int a1, int a2, int b1, int b2)
+        {
+            if (a2 == b2) return a1 - b1;
+            return a1 * b2 - b1 * a2;
+        }
+        public struct Fraction
+        {
+            public int up;
+            public int down;
+            public Fraction(int up, int down)
+            {
+                this.up = up;
+                this.down = down;
+            }
+            
+            
+            public static Fraction operator + (Fraction a, Fraction b)
+            {
+                return new Fraction(SumUp(a.up, a.down, b.up, b.down), SumandSubDown(a.up, a.down, b.up, b.down));
+            
+            }
+
+            public static Fraction operator *(Fraction a, Fraction b)
+            {
+                return new Fraction(a.up * b.up, a.down * b.down);
+            } 
+            
+            public static Fraction operator / (Fraction a, Fraction b)
+            {
+                return new Fraction(a.up * b.down, a.down * b.up);
+            } 
+            
+            public static Fraction operator - (Fraction a, Fraction b)
+            {
+                return new Fraction(SubUp(a.up, a.down, b.up, b.down), SumandSubDown(a.up, a.down, b.up, b.down));
+            }
+
+            public static Fraction operator + (Fraction a)
+            {
+                return new Fraction(a.up/gcd(a.up, a.down), a.down/gcd(a.up, a.down));
+            }
+
+            
+            
+        }
+
+        
+        public static int  ReadNumeratorFraction()
+        {
+            
+           int up = Convert.ToInt32(Console.ReadLine());
+           return up;
+
+        }
+        
+        public static int  ReadDenominatorFraction()
+        {
+            
+            int down = Convert.ToInt32(Console.ReadLine());
+            return down;
+
+        }
+
+        public static void PrintSum(Fraction a, Fraction b)
+        {
+            Fraction sum = a + b;
+            Console.WriteLine("Sum is: " + PrintFraction(sum.up, sum.down));
+        }
+        
+        public static void PrintMul(Fraction a, Fraction b)
+        {
+            Fraction mul = a * b;
+            Console.WriteLine("Multiply is: " + PrintFraction(mul.up, mul.down));
+        }
+        
+        public static void PrintDiv(Fraction a, Fraction b)
+        {
+            Fraction div = a / b;
+            Console.WriteLine("Division is: " + PrintFraction(div.up, div.down));
+        }
+        
+        public static void PrintSub(Fraction a, Fraction b)
+        {
+            Fraction sub = a - b;
+            Console.WriteLine("Substracting is: " + PrintFraction(sub.up, sub.down));
+        }
+
+        public static void PrintSimplify(Fraction a)
+        {
+            Fraction Simplify = +a;
+            Console.WriteLine("Simplified fraction: " + Simplify.up + "/" + Simplify.down);
+        }
+
+       
+        public static void TryCatchZero(int a, int b)
+        {
+            if(a == 0 || b == 0) throw new DivideByZeroException();
+        }
+        
+        public static void Main(string[] args)
+        {
+            Console.WriteLine("Print numerator and denominator of first fraction(with Enter):");
+            int up1 = ReadNumeratorFraction();
+            int down1 = ReadDenominatorFraction();
+            
+            Console.WriteLine("Print numerator and denominator of second fraction((with Enter)):");
+            int up2 = ReadNumeratorFraction();
+            int down2 = ReadDenominatorFraction();
+            
+            Fraction a = new Fraction(up1, down1);
+            Fraction b = new Fraction(up2, down2);
+            
+            Console.WriteLine("The fractions are: " + a.up + "/" + a.down + " and " +  b.up + "/" + b.down);
+            
+            TryCatchZero(a.down, b.down);
+            
+            PrintSum(a,  b);
+            
+            PrintDiv(a, b);
+            
+            PrintMul(a, b);
+            
+            PrintSub(a, b);
+            
+            PrintSimplify(a);
+
+          
+
+            ToFraction("1.256");
+        }
+    }
+}
